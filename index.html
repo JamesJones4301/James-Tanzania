@@ -426,14 +426,14 @@
             </div>
             
             <div class="payment-methods">
-                <div class="payment-btn" onclick="selectPayment('venmo')">
-                    💜 <a href="https://venmo.com/ADJones1" target="_blank" style="color: inherit; text-decoration: none;">Venmo</a>
+                <div class="payment-btn" onclick="openVenmo('https://venmo.com/ADJones1')">
+                    💜 Venmo
                 </div>
                 <div class="payment-btn" onclick="openCashApp('https://cash.app/$VetCoach')">
                     💚 CashApp
                 </div>
-                <div class="payment-btn" onclick="selectPayment('paypal')">
-                    💙 <a href="https://www.paypal.com/donate/?hosted_button_id=SKVSD3FNPFCAG" target="_blank" style="color: inherit; text-decoration: none;">PayPal</a>
+                <div class="payment-btn" onclick="openPayPal('https://www.paypal.com/donate/?hosted_button_id=SKVSD3FNPFCAG')">
+                    💙 PayPal
                 </div>
                 <div class="payment-btn" onclick="selectPayment('zelle')">
                     🟡 Zelle<br>512-585-4106
@@ -597,6 +597,44 @@
             selectPayment('cashapp');
         }
 
+        // Open Venmo (mobile-friendly)
+        function openVenmo(webUrl) {
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            
+            if (isMobile) {
+                // Try to open Venmo app first
+                const venmoAppUrl = 'venmo://paycharge?txn=pay&recipients=ADJones1&amount=0&note=Tanzania%20Mission%20Trip';
+                window.location.href = venmoAppUrl;
+                
+                // Fallback to web after a short delay if app doesn't open
+                setTimeout(() => {
+                    window.open(webUrl, '_blank');
+                }, 1500);
+            } else {
+                window.open(webUrl, '_blank');
+            }
+            selectPayment('venmo');
+        }
+
+        // Open PayPal (mobile-friendly) 
+        function openPayPal(url) {
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            
+            if (isMobile) {
+                // Try to open PayPal app first
+                const paypalAppUrl = 'paypal://';
+                window.location.href = paypalAppUrl;
+                
+                // Fallback to web after a short delay if app doesn't open
+                setTimeout(() => {
+                    window.open(url, '_blank');
+                }, 1500);
+            } else {
+                window.open(url, '_blank');
+            }
+            selectPayment('paypal');
+        }
+
         // Process donation
         function processDonation() {
             if (selectedNumbers.length === 0 || !selectedPayment) return;
@@ -724,14 +762,14 @@
             
             // Update the payment buttons display
             document.querySelector('.payment-methods').innerHTML = `
-                <div class="payment-btn" onclick="selectPayment('venmo')">
-                    💜 <a href="https://venmo.com/ADJones1" target="_blank" style="color: inherit; text-decoration: none;">Venmo</a>
+                <div class="payment-btn" onclick="openVenmo('https://venmo.com/ADJones1')">
+                    💜 Venmo
                 </div>
                 <div class="payment-btn" onclick="openCashApp('https://cash.app/$VetCoach')">
                     💚 CashApp
                 </div>
-                <div class="payment-btn" onclick="selectPayment('paypal')">
-                    💙 <a href="https://www.paypal.com/donate/?hosted_button_id=SKVSD3FNPFCAG" target="_blank" style="color: inherit; text-decoration: none;">PayPal</a>
+                <div class="payment-btn" onclick="openPayPal('https://www.paypal.com/donate/?hosted_button_id=SKVSD3FNPFCAG')">
+                    💙 PayPal
                 </div>
                 <div class="payment-btn" onclick="selectPayment('zelle')">
                     🟡 Zelle<br>512-585-4106
