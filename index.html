@@ -6,9 +6,9 @@
     <title>Help James Get to Tanzania - Mission Trip Fundraiser</title>
     
     <!-- Security Headers -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:;">
+   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://script.google.com; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:;">
+
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
-    <meta http-equiv="X-Frame-Options" content="DENY">
     <meta http-equiv="X-XSS-Protection" content="1; mode=block">
     
     <style>
@@ -668,12 +668,12 @@
         }
 
         function openVenmo(url) {
-            window.open(url, '_blank');
+            window.open('https://venmo.com/ADJones1', '_blank');
             selectPayment('venmo');
         }
 
         function openCashApp(url) {
-            window.open(url, '_blank');
+            window.open('https://cash.app/$Vetcoach', '_blank');
             selectPayment('cashapp');
         }
 
@@ -715,64 +715,62 @@
             modal.style.display = 'block';
         }
 
-        function confirmDonation() {
-            const donorName = sanitizeInput(document.getElementById('donorName').value);
-            const donorPhone = sanitizeInput(document.getElementById('donorPhone').value);
-            const donorAddress = sanitizeInput(document.getElementById('donorAddress').value);
-            
-            if (!donorName || !donorPhone || !donorAddress) {
-                alert('Please fill out all donor information fields.');
-                return;
-            }
-            
-            const total = selectedNumbers.reduce((sum, num) => sum + num, 0);
-            
-            // Mark numbers as donated
-            selectedNumbers.forEach(num => {
-                fundraiserData.donations[num] = true;
-            });
-            
-            fundraiserData.raised += total;
-            
-            // Create donation record
-            const donation = {
-                amount: total,
-                numbers: [...selectedNumbers],
-                method: selectedPayment,
-                timestamp: Date.now(),
-                date: new Date().toLocaleDateString(),
-                donorName: donorName,
-                donorPhone: donorPhone,
-                donorAddress: donorAddress
-            };
-            
-            donorData.push(donation);
-            
-            // Save data
-            saveData();
-            
-            // Reset selections
-            selectedNumbers = [];
-            selectedPayment = '';
-            
-            // Clear form
-            document.getElementById('donorName').value = '';
-            document.getElementById('donorPhone').value = '';
-            document.getElementById('donorAddress').value = '';
-            
-            closeModal();
-            
-            // Update UI
-            generateNumberGrid();
-            updateProgress();
-            updateDonationSummary();
-            
-            alert('✅ Thank you! Your donation has been recorded.');
-        }
+      function confirmDonation() {
+  const donorName = sanitizeInput(document.getElementById('donorName').value);
+  const donorPhone = sanitizeInput(document.getElementById('donorPhone').value);
+  const donorAddress = sanitizeInput(document.getElementById('donorAddress').value);
 
-        function closeModal() {
-            document.getElementById('paymentModal').style.display = 'none';
-        }
+  if (!donorName || !donorPhone || !donorAddress) {
+    alert('Please fill out all donor information fields.');
+    return;
+  }
+
+  const total = selectedNumbers.reduce((sum, num) => sum + num, 0);
+
+  // Store locally
+  selectedNumbers.forEach(num => fundraiserData.donations[num] = true);
+  fundraiserData.raised += total;
+
+  const donation = {
+    amount: total,
+    numbers: selectedNumbers.join(", "),
+    method: selectedPayment,
+    donorName,
+    donorPhone,
+    donorAddress
+  };
+
+  // Build and submit form
+  const form = document.createElement("form");
+  form.action = "https://script.google.com/macros/s/AKfycbwt7TxXVpuWjSB9rpJPwbx2IyqJjquWEU5EhVrRd2q6Ra9LYj77IbUPlL-gFWwMts1JsQ/exec";
+  form.method = "POST";
+  form.style.display = "none";
+
+  for (let key in donation) {
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.name = key;
+    input.value = donation[key];
+    form.appendChild(input);
+  }
+
+  document.body.appendChild(form);
+  form.submit();
+
+  // Local cleanup
+  donorData.push(donation);
+  saveData();
+  selectedNumbers = [];
+  selectedPayment = '';
+  document.getElementById('donorName').value = '';
+  document.getElementById('donorPhone').value = '';
+  document.getElementById('donorAddress').value = '';
+  closeModal();
+  generateNumberGrid();
+  updateProgress();
+  updateDonationSummary();
+}
+
 
         // Admin Functions
         function setupMobileAdminAccess() {
@@ -926,6 +924,8 @@
 
         // Initialize the page
         init();
+
+        
     </script>
 </body>
 </html>
